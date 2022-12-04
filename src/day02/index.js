@@ -9,16 +9,16 @@ const wins = [
 ];
 
 // All possible hands
-  const hands = {
-    'A': 1, // Opponent Rock
-    'X': 1, // Player Rock
+const hands = {
+  'A': 1, // Opponent Rock
+  'X': 1, // Player Rock
 
-    'B': 2, // Opponent Paper
-    'Y': 2, // Player Paper
+  'B': 2, // Opponent Paper
+  'Y': 2, // Player Paper
 
-    'C': 3, // Opponent Scissors
-    'Z': 3, // Player Scissors
-  };
+  'C': 3, // Opponent Scissors
+  'Z': 3, // Player Scissors
+};
 
 
 const parseInput = (rawInput) => rawInput;
