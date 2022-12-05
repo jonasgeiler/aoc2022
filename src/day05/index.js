@@ -20,8 +20,8 @@ const parseInput = (rawInput) => {
 
       moves.push({
         amount: Number(amount),
-        from: Number(from),
-        to: Number(to),
+        from: Number(from) - 1, // Subtract 1 to make it usable as array index
+        to: Number(to) - 1, // Same here
       });
     }
   }
@@ -37,8 +37,8 @@ const part1 = (rawInput) => {
 
   for (let move of moves) {
     for (let n = 0; n < move.amount; n++) {
-      const crate = crates[move.from - 1].pop(); // Remove crate from old stack
-      crates[move.to - 1].push(crate); // And add crate to the new stack
+      const crate = crates[move.from].pop(); // Remove crate from old stack
+      crates[move.to].push(crate); // And add crate to the new stack
     }
   }
 
@@ -54,8 +54,8 @@ const part2 = (rawInput) => {
   let { crates, moves } = parseInput(rawInput);
 
   for (let move of moves) {
-    const moveCrates = crates[move.from - 1].splice(crates[move.from - 1].length - move.amount); // Remove crates from old stack
-    crates[move.to - 1].push(...moveCrates); // And add all crates to the new stack
+    const moveCrates = crates[move.from].splice(crates[move.from].length - move.amount); // Remove crates from old stack
+    moveCrates.map(crate => crates[move.to].push(crate)); // And add all crates to the new stack
   }
 
   let result = '';
