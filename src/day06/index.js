@@ -1,20 +1,23 @@
 import run from "aocrunner";
 
 const getMarkerPos = (text, markerLength) => {
-  markerSearchLoop: for (let textCharNum = 0; textCharNum < text.length - markerLength - 1; textCharNum++) { // Go through the whole text
-    let currChars = []; // Collects characters of current marker
-    for (let markerCharNum = 0; markerCharNum < markerLength; markerCharNum++) { // Loops through the marker character offsets
-      const currChar = text[textCharNum + markerCharNum]; // Get current character for the marker
+  let charNum = 0; // Keeps track of character number in text
+  let appearedChars = []; // Keeps track of appeared characters
+  while (charNum < text.length) {
+    const char = text[charNum]; // Get current character from text
 
-      if (currChars.includes(currChar)) { // Check if character already appeared
-        continue markerSearchLoop; // Continue to next marker
-      }
-
-      currChars.push(currChar); // Add current character to list, so we can check if it already appeared
+    if (appearedChars.includes(char)) { // Check if the character already appeared
+      charNum -= appearedChars.length - 1; // Revert character position to last position + 1
+      appearedChars = []; // Reset appeared characters
+      continue; // Next loop
     }
 
-    // If the loop didn't continue and reaches this code, it means we've found the marker
-    return textCharNum + markerLength; // Return the last character position
+    appearedChars.push(char); // Add current character to appeared characters, so we can check for duplicates
+    charNum++; // Increase the character number manually
+
+    if (appearedChars.length === markerLength) {
+      return charNum; // If the appeared characters have the same length as the marker, we have found our marker position
+    }
   }
 };
 
