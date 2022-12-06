@@ -1,41 +1,25 @@
 import run from "aocrunner";
 
-const parseInput = (rawInput) => rawInput;
+const getMarkerPos = (text, markerLength) => {
+  markerSearchLoop: for (let textCharNum = 0; textCharNum < text.length - markerLength - 1; textCharNum++) { // Go through the whole text
+    let currChars = []; // Collects characters of current marker
+    for (let markerCharNum = 0; markerCharNum < markerLength; markerCharNum++) { // Loops through the marker character offsets
+      const currChar = text[textCharNum + markerCharNum]; // Get current character for the marker
 
-const part1 = (rawInput) => {
-  const input = parseInput(rawInput);
+      if (currChars.includes(currChar)) { // Check if character already appeared
+        continue markerSearchLoop; // Continue to next marker
+      }
 
-  for (let i = 0; i < input.length - 3; i++) {
-    const chars = [ input[i], input[i + 1], input[i + 2], input[i + 3] ]; // Create an array of the next 4 characters
-    const charsSet = new Set(chars); // The set will remove any duplicate chars, so if the size is the same as the array, all items are unique
-
-    if (chars.length === charsSet.size) {
-      return i + 4; // Return last character position if chars array and chars set have same size
+      currChars.push(currChar); // Add current character to list, so we can check if it already appeared
     }
-  }
 
-  return;
+    // If the loop didn't continue and reaches this code, it means we've found the marker
+    return textCharNum + markerLength; // Return the last character position
+  }
 };
 
-const part2 = (rawInput) => {
-  const input = parseInput(rawInput);
-
-  for (let i = 0; i < input.length - 13; i++) {
-    // Create an array of the next 14 characters
-    let chars = [];
-    for (let j = 0; j < 14; j++) {
-      chars.push(input[i + j]);
-    }
-
-    const charsSet = new Set(chars); // Same as in part 1
-
-    if (chars.length === charsSet.size) {
-      return i + 14; // Same as in part 1
-    }
-  }
-
-  return;
-};
+const part1 = (rawInput) => getMarkerPos(rawInput, 4);
+const part2 = (rawInput) => getMarkerPos(rawInput, 14);
 
 run({
   part1: {
