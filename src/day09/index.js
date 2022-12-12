@@ -1,91 +1,83 @@
 import run from "aocrunner";
 
-const parseInput = (rawInput) => rawInput.split('\n');
+const parseInput = (rawInput) => rawInput.split('\n').map(line => {
+  const [ direction, stepsStr ] = line.split(' ');
+  return [ direction, Number(stepsStr) ];
+});
 
-const part1 = (rawInput) => {
-  const inputLines = parseInput(rawInput);
-
-  let headX = 0;
-  let headY = 0;
-  let tailX = 0;
-  let tailY = 0;
-  let tailCoords = [];
-  for (let line of inputLines) {
-    const [ direction, stepsStr ] = line.split(' ');
-    const steps = Number(stepsStr);
-
+const countTailCoords = (instructions, ropeLength) => {
+  let knots = Array.from({ length: ropeLength }, () => [ 0, 0, ]); // Init array representing the knots (first knot is head)
+  let tailCoords = new Set(); // Set that holds the coordinates of the tail (Set because we don't want duplicates)
+  for (let [ direction, steps ] of instructions) {
     for (let step = 0; step < steps; step++) {
+      // Get head position
+      let headX = knots[0][0];
+      let headY = knots[0][1];
+
+      // Update head position based on instruction
       if (direction === 'R') {
-        headX++; // Move head right
-
-        if (headX - tailX > 1) { // Check if we need to change tail position (head too far away)
-          tailX++; // Move tail to the right, after the head
-
-          if (headY > tailY) {
-            // Head is above tail, so also move tail up
-            tailY++;
-          } else if (headY < tailY) {
-            // Head is below tail, so also move tail down
-            tailY--;
-          }
-        }
+        headX += 1; // Move head right
       } else if (direction === 'L') {
-        headX--; // Move head left
-
-        if (tailX - headX > 1) { // Check if we need to change tail position (head too far away)
-          tailX--; // Move tail to the left, after the head
-
-          if (headY > tailY) {
-            // Head is above tail, so also move tail up
-            tailY++;
-          } else if (headY < tailY) {
-            // Head is below tail, so also move tail down
-            tailY--;
-          }
-        }
+        headX -= 1; // Move head left
       } else if (direction === 'U') {
-        headY++; // Move head up
-
-        if (headY - tailY > 1) { // Check if we need to change tail position (head too far away)
-          tailY++; // Move the tail up, after the head
-
-          if (headX > tailX) {
-            // Head is right of tail, so also move tail right
-            tailX++;
-          } else if (headX < tailX) {
-            // Head is left of tail, so also move tail left
-            tailX--;
-          }
-        }
+        headY += 1; // Move head up
       } else if (direction === 'D') {
-        headY--; // Move head down
+        headY -= 1; // Move head down
+      }
 
-        if (tailY - headY > 1) { // Check if we need to change tail position (head too far away)
-          tailY--; // Move tail down, after the head
+      // Set new head position in the knots array
+      knots[0][0] = headX;
+      knots[0][1] = headY;
 
-          if (headX > tailX) {
-            // Head is right of tail, so also move tail right
-            tailX++;
-          } else if (headX < tailX) {
-            // Head is left of tail, so also move tail left
-            tailX--;
-          }
+      // Loop through every knot, except the first (head) knot
+      for (let knotNum = 1; knotNum < ropeLength; knotNum++) {
+        // Get current knot position
+        let knotX = knots[knotNum][0];
+        let knotY = knots[knotNum][1];
+
+        // Get previous knot position (this is the head position for the second knot)
+        const prevKnotX = knots[knotNum - 1][0];
+        const prevKnotY = knots[knotNum - 1][1];
+
+        // Get distance between the two knots
+        const deltaX = prevKnotX - knotX;
+        const deltaY = prevKnotY - knotY;
+        const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+
+        // Move knot based on distance to the previous knot
+        if (distance === 2) { // Previous knot is too far away in the same column/row
+          // Move towards it
+          knotX += Math.floor(deltaX / 2);
+          knotY += Math.floor(deltaY / 2);
+        } else if (distance > 2) { // Previous knot is too far away diagonally
+          // Move towards it
+          knotX += Math.sign(deltaX);
+          knotY += Math.sign(deltaY);
         }
+
+        // Set new head position in knot array
+        knots[knotNum][0] = knotX;
+        knots[knotNum][1] = knotY;
       }
 
-      if (!tailCoords.includes(tailX + ',' + tailY)) {
-        tailCoords.push(tailX + ',' + tailY)
-      }
+      // Keep track of the last knot positions
+      tailCoords.add(knots[ropeLength - 1][0] + ',' + knots[ropeLength - 1][1]);
     }
   }
 
-  return tailCoords.length;
+  return tailCoords.size;
+};
+
+const part1 = (rawInput) => {
+  const instructions = parseInput(rawInput);
+
+  return countTailCoords(instructions, 2);
 };
 
 const part2 = (rawInput) => {
-  const input = parseInput(rawInput);
+  const instructions = parseInput(rawInput);
 
-  return;
+  return countTailCoords(instructions, 10);
 };
 
 run({
@@ -115,6 +107,17 @@ R 2`,
       //   input: ``,
       //   expected: "",
       // },
+      {
+        input: `R 4
+U 4
+L 3
+D 1
+R 4
+D 1
+L 5
+R 2`,
+        expected: 1,
+      }
     ],
     solution: part2,
   },
