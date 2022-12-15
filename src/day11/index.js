@@ -3,17 +3,19 @@ import run from "aocrunner";
 const parseMonkeys = (rawInput) => {
   let monkeys = [];
   let newMonkey = { itemInspections: 0 };
-  for (let line of rawInput.split('\n').map(l => l.trim())) {
-    if (line.startsWith('Starting items')) {
-      newMonkey.items = line.substr('Starting items: '.length).split(', ').map(i => ({ worryLevel: Number(i) }));
-    } else if (line.startsWith('Operation')) {
-      newMonkey.operation = new Function('old', 'return ' + line.substr('Operation: new = '.length));
-    } else if (line.startsWith('Test')) {
-      newMonkey.testDivisible = Number(line.substr('Test: divisible by '.length));
-    } else if (line.startsWith('If true')) {
-      newMonkey.ifTrueThrowTo = Number(line.substr('If true: throw to monkey '.length));
-    } else if (line.startsWith('If false')) {
-      newMonkey.ifFalseThrowTo = Number(line.substr('If false: throw to monkey '.length));
+  for (let line of rawInput.split('\n')) {
+    const trimmedLine = line.trim();
+
+    if (trimmedLine.startsWith('Starting items')) {
+      newMonkey.items = trimmedLine.substr('Starting items: '.length).split(', ').map(i => ({ worryLevel: Number(i) }));
+    } else if (trimmedLine.startsWith('Operation')) {
+      newMonkey.operation = new Function('old', 'return ' + trimmedLine.substr('Operation: new = '.length));
+    } else if (trimmedLine.startsWith('Test')) {
+      newMonkey.testDivisible = Number(trimmedLine.substr('Test: divisible by '.length));
+    } else if (trimmedLine.startsWith('If true')) {
+      newMonkey.ifTrueThrowTo = Number(trimmedLine.substr('If true: throw to monkey '.length));
+    } else if (trimmedLine.startsWith('If false')) {
+      newMonkey.ifFalseThrowTo = Number(trimmedLine.substr('If false: throw to monkey '.length));
 
       // This is the last line of each monkey, so add monkey to list of monkeys and reset
       monkeys.push(newMonkey);
