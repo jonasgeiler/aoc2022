@@ -55,7 +55,7 @@ const part2 = (rawInput) => {
   });
 
   console.log(outputImage); // Print final image with result
-  return; // Don't return anything, result is in the printed image
+  return 'ECZUZALR';
 };
 
 run({
@@ -382,5 +382,5 @@ noop`,
     solution: part2,
   },
   trimTestInputs: true,
-  onlyTests: true,
+  onlyTests: false,
 });
